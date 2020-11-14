@@ -13,6 +13,11 @@ repositories {
 }
 
 dependencies {
+	annotationProcessor('org.projectlombok:lombok:1.18.8')
+	implementation 'junit:junit:4.12'
+	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.projectlombok:lombok:1.18.8')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

@@ -1,0 +1,30 @@
+server:
+  port: 8070
+
+spring:
+  datasource:
+    sql-script-encoding: utf-8
+    initialization-mode: always
+    url: jdbc:postgresql://ec2-34-236-215-156.compute-1.amazonaws.com:5432/dbdrrr6600jf5f?useLegacyDateTimeCode=false&serverTimezone=Asia/Seoul&useSSL=true
+    username: swggfzaqbaslna
+    password: 999170aec8cf10b2cda0e72eb883225eb4e8b079ea7e60e3903a7b27f97d397a
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    show-sql: true
+    hibernate:
+      format_sql: true
+      ddl-auto: update
+      jdbc:
+        time_zone=UTC
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+  http:
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
