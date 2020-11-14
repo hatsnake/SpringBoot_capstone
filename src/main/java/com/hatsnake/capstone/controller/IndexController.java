@@ -1,14 +1,15 @@
 package com.hatsnake.capstone.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class HomeController {
+@Controller
+public class IndexController {
 
     @GetMapping("")
-    public String hello() {
-        return "hello";
+    public String index() {
+        return "index";
     }
 
 }
