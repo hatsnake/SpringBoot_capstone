@@ -161,7 +161,21 @@ function getLocation() {
    		});
 
     }, function(error) {
-      console.error(error);
+        switch(error.code){
+            case error.TIMEOUT:
+                alert("시간문제");
+                break;
+            case error.POSITION_UNVAILABLE:
+                alert("위치_알수없음");
+                break;
+            case error.PERMISSION_DENIED:
+                alert("권한거부");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("알수없는에러");
+                break;
+            default: break;
+        }
     }, {
       enableHighAccuracy: true,
       maximumAge: 0,
