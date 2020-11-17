@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	compile('org.springframework.boot:spring-boot-starter-mustache')
 	annotationProcessor('org.projectlombok:lombok:1.18.8')
 	implementation 'junit:junit:4.12'

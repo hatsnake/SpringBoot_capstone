@@ -1,0 +1,381 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<title>간단한 지도 표시하기</title>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=8h2lb3yhzh"></script>
+<!-- You MUST include jQuery before Fomantic -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.7/semantic.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.7/semantic.min.js"></script>
+<!-- 구글폰트 -->
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+<style>
+    .map_box {max-width:1200px;}
+    .map_box #map { width:100%; height:628px;}
+    #my_location { position:absolute; bottom:12%; right:3%; background:white; border:0.5px solid #5D5D5D; }
+    #crosshairs { color:#5D5D5D; }
+    #tourListTitle:hover{ color:red; cursor:pointer; }
+
+    .pin {
+      width: 30px;
+      height: 30px;
+      border-radius: 50% 50% 50% 0;
+      background: #00cae9;
+      position: absolute;
+      transform: rotate(-45deg);
+      left: 50%;
+      top: 50%;
+      margin: -20px 0 0 -20px;
+    }
+    .pin:after {
+      content: "";
+      width: 14px;
+      height: 14px;
+      margin: 8px 0 0 8px;
+      background: #e6e6e6;
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .bounce {
+      animation-name: bounce;
+      animation-fill-mode: both;
+      animation-duration: 1s;
+    }
+
+    .pulse {
+      background: #d6d4d4;
+      border-radius: 50%;
+      height: 14px;
+      width: 14px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin: 11px 0px 0px -12px;
+      transform: rotateX(55deg);
+      z-index: -2;
+    }
+    .pulse:after {
+      content: "";
+      border-radius: 50%;
+      height: 40px;
+      width: 40px;
+      position: absolute;
+      margin: -13px 0 0 -13px;
+      animation: pulsate 1s ease-out;
+      animation-iteration-count: infinite;
+      opacity: 0;
+      box-shadow: 0 0 1px 2px #00cae9;
+      animation-delay: 1.1s;
+    }
+
+    @keyframes pulsate {
+      0% {
+        transform: scale(0.1, 0.1);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.2, 1.2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes bounce {
+      80% {
+        transform: translateY(-10px) rotate(-45deg);
+      }
+
+      100% {
+        transform: translateY(0) rotate(-45deg);
+      }
+    }
+
+    .tourMarker {
+        width:auto;
+        height:20px;
+        background:white;
+        font-size:10px;
+        font-weight:bold;
+        padding:5px;
+        border-radius:18px;
+        color:gray;
+        box-shadow: 2px 2px 2px black;
+        font-family: 'Noto Sans KR', sans-serif;
+        position:relative;
+    }
+    .tourMarker::after {
+        content: ' \2726';
+        width:46px;
+        height:21px;
+        position:absolute;
+        bottom:-80%;
+        left:32%;
+        font-size:3em;
+        color:yellow;
+        text-shadow:3px 2px 7px black;
+    }
+
+    .noto {
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+</style>
+</head>
+</head>
+<body>
+<div class="ui container">
+
+    <div class="ui secondary pointing menu">
+        <a class="item active">
+            지도
+        </a>
+
+        <div class="right menu">
+            <a class="ui item">
+                로그인/로그아웃
+            </a>
+        </div>
+    </div>
+    <div class="ui tertiary inverted red segment">
+        <div class="map_box">
+            <div id="map">
+            </div>
+
+            <div id="my_location" class="ui compact icon button" data-content="현재 위치">
+                <i id="crosshairs" class="crosshairs icon"></i>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ui grid">
+        <div id="input_column" class="ten wide column">
+            <div class="ui fluid large action input">
+                <input type="text" placeholder="위치 검색">
+                <select class="ui large compact selection dropdown">
+                    <option value="all" selected>모두</option>
+                    <option value="articles">Articles</option>
+                    <option value="products">Products</option>
+                </select>
+                <div class="ui large button">검색</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui items">
+        <div class="ui section divider"></div>
+
+        <!-- 페이지네이션 -->
+        <div class="ui borderless menu">
+            <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}}" class="item">
+                <i class="left arrow icon"></i> Previous
+            </a>
+            <span th:each="pageNum : ${pageList}" th:inline="text">
+                <span th:if="${currentPageNum == pageNum}">
+                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}}" class="item" style="color:red;">[[${pageNum}]]</a>
+                </span>
+                <span th:unless="${currentPageNum == pageNum}">
+                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}}" class="item">[[${pageNum}]]</a>
+                </span>
+            </span>
+
+            <a th:href="@{'/?page='+${currentPageNum+1}}" class="item">
+                Next <i class="icon right arrow"></i>
+            </a>
+        </div>
+
+        <!-- 관광정보 -->
+        <span th:each="tourList : ${tourListPagination}">
+            <div class="item" style="padding:5px;">
+                <div class="content">
+                    <a id="tourListTitle" class="ui header noto" th:inline="text" >[[${tourList.id}]]. [[${tourList.title}]]</a>
+                    <div class="description" style="margin-top:10px !important;">
+                        <div class="noto" th:inline="text">위치주소 : [[${tourList.cotAddrNew}]]</div>
+                        <div class="noto" th:inline="text">전화번호 : [[${tourList.cotTel}]]</div>
+                        <div class="noto" th:inline="text">웹사이트 : <a th:href="${tourList.cotHomepage}" target="_blank">[[${tourList.cotHomepage}]]</a></div>
+                        <div class="noto" th:inline="text">와이파이 : [[${tourList.wifiUse}]]</div>
+                        <div class="noto" th:inline="text">운영시간 :<br/> [[${tourList.cotUseTimeDesc}]]</div>
+                    </div>
+                    <div class="extra">
+                        <div class="ui mini labeled button" tabindex="0">
+                            <div class="ui mini button">
+                                <i class="heart icon"></i> <span class="noto">좋아요</span>
+                            </div>
+                            <a class="ui mini basic label noto">
+                                2,048
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui section divider"></div>
+        </span>
+
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="ui borderless menu">
+        <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}}" class="item">
+            <i class="left arrow icon"></i> Previous
+        </a>
+        <span th:each="pageNum : ${pageList}" th:inline="text">
+                <span th:if="${currentPageNum == pageNum}">
+                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}}" class="item" style="color:red;">[[${pageNum}]]</a>
+                </span>
+                <span th:unless="${currentPageNum == pageNum}">
+                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}}" class="item">[[${pageNum}]]</a>
+                </span>
+            </span>
+
+        <a th:href="@{'/?page='+${currentPageNum+1}}" class="item">
+            Next <i class="icon right arrow"></i>
+        </a>
+    </div>
+    <br><br>
+</div>
+
+<script th:inline="javascript">
+
+function desktop_input() {
+	$("#input_column").removeClass('sixteen').removeClass('wide').removeClass('column');
+	$("#input_column").addClass('ten').addClass('wide').addClass('column');
+}
+
+function mobile_input() {
+	$("#input_column").removeClass('ten').removeClass('wide').removeClass('column');
+	$("#input_column").addClass('sixteen').addClass('wide').addClass('column');
+}
+
+
+$(document).ready(function() {
+	var winWidth = $(window).width();
+	var boxWidth = $('#map').width();
+
+	if(winWidth <= 1200) {
+		$('#map').height(boxWidth*0.681);
+
+		desktop_input();
+	}
+
+	if(winWidth <= 600) {
+		mobile_input();
+	}
+
+});
+
+$(window).resize(function() {
+	var winWidth = $(window).width();
+	var boxWidth = $('#map').width();
+
+	if(winWidth <= 1200) {
+		$('#map').height(boxWidth*0.681);
+
+		desktop_input();
+	}
+
+	if(winWidth <= 600) {
+		mobile_input();
+	}
+
+});
+
+function getLocation() {
+  if (navigator.geolocation) { // GPS를 지원하면
+    navigator.geolocation.getCurrentPosition(function(position) {
+
+    	// 현재위치 표시
+    	var mapOptions = {
+   		    center: new naver.maps.LatLng(position.coords.latitude, position.coords.longitude),
+   		    zoom: 18
+   		};
+
+   		var map = new naver.maps.Map('map', mapOptions);
+
+   		var markerOptions = {
+   			position: new naver.maps.LatLng(position.coords.latitude, position.coords.longitude),
+   			map: map,
+            icon: {
+                content: [
+                    "<div class='pin bounce'></div>"+
+                    "<div class='pulse'></div>"
+                ].join(''),
+                size: new naver.maps.Size(38,58),
+                anchor: new naver.maps.Point(19,58),
+            }
+   		};
+
+   		var marker = new naver.maps.Marker(markerOptions);
+
+        //Open API 위치랑 정보
+        /*<![CDATA[*/
+            /*[# th:each="tourList : ${tourListAll}"]*/
+                var markerOptions = {
+                    position: new naver.maps.LatLng(/*[[${tourList.cotMapPointY}]]*/, /*[[${tourList.cotMapPointX}]]*/),
+   			        map: map,
+                    icon: {
+                        content: [
+                            `<div class='tourMarker'>[[${tourList.title}]]</div>`
+                        ].join(''),
+                        size: new naver.maps.Size(38,58),
+                        anchor: new naver.maps.Point(19,58),
+                    }
+                };
+
+                var marker = new naver.maps.Marker(markerOptions);
+            /*[/]*/
+        /*]]>*/
+
+
+   		var myLocation = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+   		$("#my_location").on("click", function(e) {
+   			e.preventDefault();
+
+   			map.setCenter(myLocation);
+   		});
+
+    }, function(error) {
+        switch(error.code){
+            case error.TIMEOUT:
+                alert("시간문제");
+                break;
+            case error.POSITION_UNVAILABLE:
+                alert("위치_알수없음");
+                break;
+            case error.PERMISSION_DENIED:
+                alert("권한거부");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("알수없는에러");
+                break;
+            default: break;
+        }
+    }, {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: Infinity
+    });
+  } else {
+    alert('GPS를 지원하지 않습니다');
+  }
+}
+getLocation();
+
+$('#my_location').popup();
+
+$('.selection.dropdown').dropdown();
+
+</script>
+</body>
+</html>
