@@ -142,23 +142,6 @@
 
         <div class="right menu">
             <a class="ui item">
-                <span th:if="${userName}">
-                    <img th:src="${userPicture}" style="border-radius:100%; width:14px; height:14px;"/>
-                    <span id="user" th:inline="text">[[${userName}]]</span>
-                    <a href="/logout">
-                        <button class="ui button" role="button">
-                            로그아웃
-                        </button>
-                    </a>
-                </span>
-
-                <span th:unless="${userName}">
-                    <a href="/oauth2/authorization/naver">
-                        <button class="ui whatsapp button" role="button">
-                            <span>N</span> <span>네이버 로그인</span>
-                        </button>
-                    </a>
-                </span>
 
             </a>
         </div>
