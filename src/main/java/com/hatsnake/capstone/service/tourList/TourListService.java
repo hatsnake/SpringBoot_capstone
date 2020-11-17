@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +20,8 @@ public class TourListService {
 
     @Autowired
     private TourListRepository tourListRepository;
+
+    //오류 고쳐야함
     private static final int BLOCK_PAGE_NUM_COUNT = 500; //블럭에 존재하는 페이지수
     private static final int PAGE_POST_COUNT = 10; //한페이지에 존재하는 게시글수
 
@@ -80,6 +83,31 @@ public class TourListService {
 
         return pageList;
     }
+
+    @Transactional
+    public TourListResponseDto getTourList(Long id) {
+        Optional<TourList> tourListWrapper = tourListRepository.findById(id);
+        TourList tourList = tourListWrapper.get();
+
+        TourListResponseDto tourListDto = TourListResponseDto.builder()
+            .id(tourList.getId())
+            .cotArtId(tourList.getCotArtId())
+            .cotMapPointX(tourList.getCotMapPointX())
+            .cotMapPointY(tourList.getCotMapPointY())
+            .title(tourList.getTitle())
+            .cotAddrNew(tourList.getCotAddrNew())
+            .cotTel(tourList.getCotTel())
+            .cotHomepage(tourList.getCotHomepage())
+            .cot24hService(tourList.getCot24hService())
+            .wifiUse(tourList.getWifiUse())
+            .cotCloseDay(tourList.getCotCloseDay())
+            .cotUseTimeDesc(tourList.getCotUseTimeDesc())
+            .cotTroublemanConvenfac(tourList.getCotTroublemanConvenfac())
+            .build();
+
+        return tourListDto;
+    }
+
 
     @Transactional
     public Long getBoardCount() {

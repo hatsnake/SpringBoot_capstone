@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>Seoul TourList</title>
+<title>서울 구경</title>
 <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=8h2lb3yhzh"></script>
 <!-- You MUST include jQuery before Fomantic -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -124,6 +124,9 @@
         color:yellow;
         text-shadow:3px 2px 7px black;
     }
+    .tourMarker:hover {
+        cursor:point;
+    }
 
     .noto {
         font-family: 'Noto Sans KR', sans-serif;
@@ -143,23 +146,6 @@
         <div class="right menu">
             <a class="ui item">
 
-                <span th:if="${userName}">
-                    <img th:src="${userPicture}" style="border-radius:100%; width:14px; height:14px;"/>
-                    <span id="user" th:inline="text">[[${userName}]]</span>
-                    <a href="/logout">
-                        <button class="ui button" role="button">
-                            로그아웃
-                        </button>
-                    </a>
-                </span>
-
-                <span th:unless="${userName}">
-                    <a href="/oauth2/authorization/naver">
-                        <button class="ui whatsapp button" role="button">
-                            <span>N</span> <span>네이버 로그인</span>
-                        </button>
-                    </a>
-                </span>
 
             </a>
         </div>
@@ -216,13 +202,13 @@
         <span th:each="tourList : ${tourListPagination}">
             <div class="item" style="padding:5px;">
                 <div class="content">
-                    <a id="tourListTitle" class="ui header noto" th:inline="text" >[[${tourList.id}]]. [[${tourList.title}]]</a>
+                    <div id="tourListTitle" class="ui header noto tourListTitle" th:inline="text" th:data-id="${tourList.id}" >[[${tourList.id}]]. [[${tourList.title}]]</div>
                     <div class="description" style="margin-top:10px !important;">
                         <div class="noto" th:inline="text">위치주소 : [[${tourList.cotAddrNew}]]</div>
                         <div class="noto" th:inline="text">전화번호 : [[${tourList.cotTel}]]</div>
                         <div class="noto" th:inline="text">웹사이트 : <a th:href="${tourList.cotHomepage}" target="_blank">[[${tourList.cotHomepage}]]</a></div>
                         <div class="noto" th:inline="text">와이파이 : [[${tourList.wifiUse}]]</div>
-                        <div class="noto" th:inline="text">운영시간 :<br/> [[${tourList.cotUseTimeDesc}]]</div>
+                        <div class="noto" th:inline="text">운영시간 :<br/> [(${tourList.cotUseTimeDesc})]</div>
                     </div>
                     <div class="extra">
                         <div class="ui mini labeled button" tabindex="0">
@@ -261,6 +247,19 @@
         </a>
     </div>
     <br><br>
+</div>
+
+<div class="ui modal">
+    <div class="header" id="title">Header</div>
+    <div class="scrolling content">
+        <div id="cotAddrNew"></div>
+        <div id="cotTel"></div>
+        <div id="cotHomepage"></div>
+        <div id="wifiUse"></div>
+        <div id="cotCloseDay"></div>
+        <div id="cotUseTimeDesc"></div>
+        <div id="cotTroublemanConvenfac"></div>
+    </div>
 </div>
 
 <script th:inline="javascript">
@@ -315,7 +314,7 @@ function getLocation() {
     	// 현재위치 표시
     	var mapOptions = {
    		    center: new naver.maps.LatLng(position.coords.latitude, position.coords.longitude),
-   		    zoom: 18
+   		    zoom: 14
    		};
 
    		var map = new naver.maps.Map('map', mapOptions);
@@ -343,7 +342,7 @@ function getLocation() {
    			        map: map,
                     icon: {
                         content: [
-                            `<div class='tourMarker'>[[${tourList.title}]]</div>`
+                            `<div class='tourMarker' data-id='[[${tourList.id}]]'>[[${tourList.title}]]</div>`
                         ].join(''),
                         size: new naver.maps.Size(38,58),
                         anchor: new naver.maps.Point(19,58),
@@ -393,6 +392,40 @@ getLocation();
 $('#my_location').popup();
 
 $('.selection.dropdown').dropdown();
+
+$(document).ready(function(){
+    $('.tourListTitle,.tourMarker').on('click', function() {
+        var id = $(this).attr('data-id');
+        $.ajax({
+            type: 'GET',
+            url: '/getTourList',
+            data:{"id":id},
+            success: function(data) {
+                $('#title').text(data.title);
+                $('#cotAddrNew').text(data.cotAddrNew);
+                $('#cotTel').text(data.cotTel);
+                $('#cotHomepage').text(data.cotHomepage);
+                $('#wifiUse').text(data.wifiUse);
+                $('#cotCloseDay').text(data.cotCloseDay);
+                $('#cotUseTimeDesc').text(data.cotUseTimeDesc);
+                $('#cotTroublemanConvenfac').text(data.cotTroublemanConvenfac);
+                $('.ui.modal').modal('show');
+            },
+            beforeSend:function() {
+                $('body').toast({
+                    message: '상세보기 여는중입니다. &nbsp; <div class="ui active small inline slow blue double loader"></div>'
+                });
+            },
+            complete:function() {
+
+            },
+            error:function(error) {
+
+            }
+        });
+
+    });
+});
 
 </script>
 </body>

@@ -13,8 +13,6 @@ repositories {
 }
 
 dependencies {
-	compile('org.springframework.session:spring-session-jdbc')
-	compile('org.springframework.boot:spring-boot-starter-oauth2-client')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	compile('org.springframework.boot:spring-boot-starter-mustache')
 	annotationProcessor('org.projectlombok:lombok:1.18.8')
