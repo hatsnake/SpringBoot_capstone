@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<title>간단한 지도 표시하기</title>
+<title>Seoul TourList</title>
 <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=8h2lb3yhzh"></script>
 <!-- You MUST include jQuery before Fomantic -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -135,14 +135,31 @@
 <body>
 <div class="ui container">
 
-    <div class="ui secondary pointing menu">
+    <div class="ui secondary pointing menu" style="margin-top:0.5% !important;">
         <a class="item active">
             지도
         </a>
 
         <div class="right menu">
             <a class="ui item">
-                로그인/로그아웃
+                <span th:if="${userName}">
+                    <img th:src="${userPicture}" style="border-radius:100%; width:15px; height:15px;"/>
+                    <span id="user" th:inline="text">[[${userName}]]</span>
+                    <a href="/logout">
+                        <button class="ui button" role="button">
+                            로그아웃
+                        </button>
+                    </a>
+                </span>
+
+                <span th:unless="${userName}">
+                    <a href="/oauth2/authorization/naver">
+                        <button class="ui whatsapp button" role="button">
+                            <span>N</span> <span>네이버 로그인</span>
+                        </button>
+                    </a>
+                </span>
+
             </a>
         </div>
     </div>
