@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
@@ -134,7 +133,6 @@
 
 </style>
 </head>
-</head>
 <body>
 <div class="ui container">
 
@@ -146,6 +144,23 @@
         <div class="right menu">
             <a class="ui item">
 
+                <span th:if="${userName}">
+                    <img th:src="${userPicture}" style="border-radius:100%; width:14px; height:14px;"/>
+                    <span id="user" th:inline="text">[[${userName}]]</span>
+                    <a href="/logout">
+                        <button class="ui button" role="button">
+                            로그아웃
+                        </button>
+                    </a>
+                </span>
+
+                <span th:unless="${userName}">
+                    <a href="/oauth2/authorization/naver">
+                        <button class="ui whatsapp button" role="button">
+                            <span>N</span> <span>네이버 로그인</span>
+                        </button>
+                    </a>
+                </span>
 
             </a>
         </div>
@@ -249,7 +264,7 @@
     <br><br>
 </div>
 
-<div class="ui modal">
+<div class="ui modal" style="max-width:700px !important;">
     <div class="header" id="title">Header</div>
     <div class="scrolling content">
         <div id="cotAddrNew"></div>
@@ -401,14 +416,14 @@ $(document).ready(function(){
             url: '/getTourList',
             data:{"id":id},
             success: function(data) {
-                $('#title').text(data.title);
-                $('#cotAddrNew').text(data.cotAddrNew);
-                $('#cotTel').text(data.cotTel);
-                $('#cotHomepage').text(data.cotHomepage);
-                $('#wifiUse').text(data.wifiUse);
-                $('#cotCloseDay').text(data.cotCloseDay);
-                $('#cotUseTimeDesc').text(data.cotUseTimeDesc);
-                $('#cotTroublemanConvenfac').text(data.cotTroublemanConvenfac);
+                $('#title').html(data.title);
+                $('#cotAddrNew').html(data.cotAddrNew);
+                $('#cotTel').html(data.cotTel);
+                $('#cotHomepage').html(data.cotHomepage);
+                $('#wifiUse').html(data.wifiUse);
+                $('#cotCloseDay').html(data.cotCloseDay);
+                $('#cotUseTimeDesc').html(data.cotUseTimeDesc);
+                $('#cotTroublemanConvenfac').html(data.cotTroublemanConvenfac);
                 $('.ui.modal').modal('show');
             },
             beforeSend:function() {
