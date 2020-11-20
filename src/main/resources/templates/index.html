@@ -265,7 +265,7 @@
 </div>
 
 <div class="ui modal" style="max-width:700px !important;">
-    <div class="header" id="title">Header</div>
+    <div class="header" id="title"></div>
     <div class="scrolling content">
         <div id="cotAddrNew"></div>
         <div id="cotTel"></div>
@@ -275,6 +275,48 @@
         <div id="cotUseTimeDesc"></div>
         <div id="cotTroublemanConvenfac"></div>
     </div>
+
+    <div class="ui container comments" style="margin:15px 20px !important;">
+        <h3 class="ui dividing header">리뷰</h3>
+        <span th:if="${userName}">
+        <form class="ui reply form">
+            <div th:inline="text">
+                <img th:src="${userPicture}" style="border-radius:100%; width:14px; height:14px;"/>
+                [[${userName}]]
+            </div>
+            <div class="ui yellow rating" id="rating1" style="margin:8px 0px !important;"></div>
+            <div class="field">
+                <textarea></textarea>
+            </div>
+            <div class="ui blue labeled submit icon button">
+                <i class="icon edit"></i> 리뷰 남기기
+            </div>
+        </form>
+        </span>
+        <span th:unless="${userName}">
+            <h3>리뷰를 위해서는 <a href="/oauth2/authorization/naver">로그인</a>이 필요합니다.</h3>
+        </span>
+
+        <div class="comment">
+            <a class="avatar">
+                <img src="" />
+            </a>
+            <div class="content">
+                <a class="author">Matt</a>
+                <div class="metadata">
+                    <span class="date">Today at 5:42PM</span>
+                </div>
+                <div class="text">
+                    How artistic!
+                </div>
+                <div class="actions">
+                    <a class="reply">Reply</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
 <script th:inline="javascript">
@@ -409,8 +451,10 @@ $('#my_location').popup();
 $('.selection.dropdown').dropdown();
 
 $(document).ready(function(){
+
     $('.tourListTitle,.tourMarker').on('click', function() {
         var id = $(this).attr('data-id');
+
         $.ajax({
             type: 'GET',
             url: '/getTourList',
@@ -441,6 +485,12 @@ $(document).ready(function(){
 
     });
 });
+
+$('#rating1')
+  .rating({
+    initialRating: 3,
+    maxRating: 5
+  });
 
 </script>
 </body>

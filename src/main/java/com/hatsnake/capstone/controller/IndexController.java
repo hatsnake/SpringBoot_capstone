@@ -52,29 +52,34 @@ public class IndexController {
 
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("id", tourList.getId());
-        map.put("title","<i class=\"map marker alternate icon\"></i> " +tourList.getTitle());
-        map.put("cotAddrNew", "<i class=\"map icon\"></i> " +tourList.getCotAddrNew());
+        if(tourList.getTitle() != null) {
+            map.put("title", " <i class=\"map marker alternate icon\"></i> " + tourList.getTitle());
+        }
+        if(tourList.getCotAddrNew() != null) {
+            map.put("cotAddrNew", " <i class=\"map icon\"></i> " + tourList.getCotAddrNew());
+        }
         if(tourList.getWifiUse().equals("Y")) {
-            map.put("wifiUse", "<i class=\"wifi icon\"></i> 와이파이");
+            map.put("wifiUse", " <i class=\"wifi icon\"></i> 와이파이");
         } else {
-            map.put("wifiUse", "<i class=\"ban icon\"></i> 와이파이");
+            map.put("wifiUse", " <i class=\"ban icon\"></i> 와이파이");
         }
         if(tourList.getCotTel() != null) {
-            map.put("cotTel", "<i class=\"phone icon\"></i> " + tourList.getCotTel());
+            map.put("cotTel", " <i class=\"phone icon\"></i> " + tourList.getCotTel());
         }
         //홈페이지 (http://)추가
         if(tourList.getCotHomepage() != null) {
-            map.put("cotHomepage", "<i class=\"laptop house icon\"></i> <a href=\"" + tourList.getCotHomepage() + "\">링크</a>");
+            map.put("cotHomepage", " <i class=\"laptop house icon\"></i> <a href=\"" + tourList.getCotHomepage() + "\"  target=\"_blank\">링크</a>");
         }
         if(tourList.getCotCloseDay() != null) {
-            map.put("cotCloseDay", "<i class=\"door closed icon\"></i> " + tourList.getCotCloseDay());
+            map.put("cotCloseDay", " <i class=\"door closed icon\"></i> " + tourList.getCotCloseDay());
         }
         if(tourList.getCotUseTimeDesc() != null) {
-            map.put("cotUseTimeDesc", "<i class=\"door open icon\"></i><br/> " + tourList.getCotUseTimeDesc());
+            map.put("cotUseTimeDesc", " <i class=\"door open icon\"></i><br/> " + tourList.getCotUseTimeDesc());
         }
         if(tourList.getCotTroublemanConvenfac() != null) {
-            map.put("cotTroublemanConvenfac", "<i class=\"wheelchair icon\"></i><br/> " + tourList.getCotTroublemanConvenfac());
+            map.put("cotTroublemanConvenfac", " <i class=\"wheelchair icon\"></i><br/> " + tourList.getCotTroublemanConvenfac());
         }
+
         return map;
     }
 
