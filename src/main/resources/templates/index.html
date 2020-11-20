@@ -197,7 +197,7 @@
         <!-- 페이지네이션 -->
         <div class="ui borderless menu">
             <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}}" class="item">
-                <i class="left arrow icon"></i> Previous
+                <i class="left arrow icon"></i> 이전
             </a>
             <span th:each="pageNum : ${pageList}" th:inline="text">
                 <span th:if="${currentPageNum == pageNum}">
@@ -208,8 +208,8 @@
                 </span>
             </span>
 
-            <a th:href="@{'/?page='+${currentPageNum+1}}" class="item">
-                Next <i class="icon right arrow"></i>
+            <a th:if="${currentPageNum != lastPageNum}" th:href="@{'/?page='+${currentPageNum+1}}" class="item">
+                다음 <i class="icon right arrow"></i>
             </a>
         </div>
 
@@ -246,7 +246,7 @@
     <!-- 페이지네이션 -->
     <div class="ui borderless menu">
         <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}}" class="item">
-            <i class="left arrow icon"></i> Previous
+            <i class="left arrow icon"></i> 이전
         </a>
         <span th:each="pageNum : ${pageList}" th:inline="text">
                 <span th:if="${currentPageNum == pageNum}">
@@ -258,7 +258,7 @@
             </span>
 
         <a th:href="@{'/?page='+${currentPageNum+1}}" class="item">
-            Next <i class="icon right arrow"></i>
+            다음 <i class="icon right arrow"></i>
         </a>
     </div>
     <br><br>

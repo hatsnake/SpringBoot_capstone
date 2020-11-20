@@ -22,7 +22,7 @@ public class TourListService {
     private TourListRepository tourListRepository;
 
     //오류 고쳐야함
-    private static final int BLOCK_PAGE_NUM_COUNT = 500; //블럭에 존재하는 페이지수
+    private static int BLOCK_PAGE_NUM_COUNT; //블럭에 존재하는 페이지수
     private static final int PAGE_POST_COUNT = 10; //한페이지에 존재하는 게시글수
 
     @Transactional
@@ -66,9 +66,11 @@ public class TourListService {
     }
 
     public Integer[] getPageList(Integer curPageNum) {
-        Integer[] pageList = new Integer[BLOCK_PAGE_NUM_COUNT];
+
         //총게시글수
         Double postsTotalCount = Double.valueOf(this.getBoardCount());
+        BLOCK_PAGE_NUM_COUNT = this.getBoardCount().intValue();
+        Integer[] pageList = new Integer[BLOCK_PAGE_NUM_COUNT];
         //총게시글수를 기준으로 계산한 마지막 페이지 번호 계산
         Integer totalLastPageNum = (int)(Math.ceil((postsTotalCount/PAGE_POST_COUNT)));
         //현재페이지를 기준으로 블럭의 마지막 페이지번호 계산
@@ -78,7 +80,8 @@ public class TourListService {
         curPageNum = (curPageNum<=3) ? 1 : curPageNum-2;
         //페이지 번호 할당
         for(int val=curPageNum, i=0; val<=curPageNum+4; val++,i++) {
-            pageList[i] = val;
+            if(totalLastPageNum >= val)
+                pageList[i] = val;
         }
 
         return pageList;

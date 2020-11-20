@@ -32,6 +32,8 @@ public class IndexController {
         Integer[] pageList = tourListService.getPageList(pageNum);
         List<TourListResponseDto> tourListAll = tourListService.findAll();
 
+        Integer lastPageNum = (int)(Math.ceil(pageList.length/10));
+
         if(user != null) {
             model.addAttribute("userPicture", user.getPicture());
             model.addAttribute("userName", user.getName());
@@ -41,6 +43,7 @@ public class IndexController {
         model.addAttribute("pageList", pageList);
         model.addAttribute("currentPageNum", pageNum);
         model.addAttribute("tourListAll", tourListAll);
+        model.addAttribute("lastPageNum", lastPageNum);
 
         return "index";
     }
