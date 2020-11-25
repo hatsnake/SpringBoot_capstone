@@ -177,38 +177,41 @@
         </div>
     </div>
 
-    <div class="ui grid">
-        <div id="input_column" class="ten wide column">
-            <div class="ui fluid large action input">
-                <input type="text" placeholder="위치 검색">
-                <select class="ui large compact selection dropdown">
-                    <option value="all" selected>모두</option>
-                    <option value="articles">Articles</option>
-                    <option value="products">Products</option>
-                </select>
-                <div class="ui large button">검색</div>
+    <form action="/" method="GET">
+        <div class="ui grid">
+            <div id="input_column" class="ten wide column">
+                <div class="ui fluid large action input">
+                    <input type="text" name="keyword" placeholder="위치 검색" th:value="${keyword}">
+                    <select class="ui large compact selection dropdown">
+                        <option value="all" selected>모두</option>
+                        <option value="articles">Articles</option>
+                        <option value="products">Products</option>
+                    </select>
+                    <button class="ui large button">검색</button>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
+
 
     <div class="ui items">
         <div class="ui section divider"></div>
 
         <!-- 페이지네이션 -->
         <div class="ui borderless menu">
-            <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}}" class="item">
+            <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}+'&keyword='+${keyword}}" class="item">
                 <i class="left arrow icon"></i> 이전
             </a>
             <span th:each="pageNum : ${pageList}" th:inline="text">
                 <span th:if="${currentPageNum == pageNum}">
-                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}}" class="item" style="color:red;">[[${pageNum}]]</a>
+                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item" style="color:red;">[[${pageNum}]]</a>
                 </span>
                 <span th:unless="${currentPageNum == pageNum}">
-                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}}" class="item">[[${pageNum}]]</a>
+                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item">[[${pageNum}]]</a>
                 </span>
             </span>
 
-            <a th:if="${currentPageNum != lastPageNum}" th:href="@{'/?page='+${currentPageNum+1}}" class="item">
+            <a th:if="${currentPageNum != lastPageNum}" th:href="@{'/?page='+${currentPageNum+1}+'&keyword='+${keyword}}" class="item">
                 다음 <i class="icon right arrow"></i>
             </a>
         </div>
@@ -264,7 +267,7 @@
     <br><br>
 </div>
 
-<div class="ui modal" style="max-width:700px !important;">
+<div class="ui blurring segment longer small modal" >
     <div class="header" id="title"></div>
     <div class="scrolling content">
         <div id="cotAddrNew"></div>
@@ -274,45 +277,39 @@
         <div id="cotCloseDay"></div>
         <div id="cotUseTimeDesc"></div>
         <div id="cotTroublemanConvenfac"></div>
-    </div>
 
-    <div class="ui container comments" style="margin:15px 20px !important;">
-        <h3 class="ui dividing header">리뷰</h3>
-        <span th:if="${userName}">
-        <form class="ui reply form">
-            <div th:inline="text">
-                <img th:src="${userPicture}" style="border-radius:100%; width:14px; height:14px;"/>
-                [[${userName}]]
-            </div>
-            <div class="ui yellow rating" id="rating1" style="margin:8px 0px !important;"></div>
-            <div class="field">
-                <textarea></textarea>
-            </div>
-            <div class="ui blue labeled submit icon button">
-                <i class="icon edit"></i> 리뷰 남기기
-            </div>
-        </form>
-        </span>
-        <span th:unless="${userName}">
-            <h3>리뷰를 위해서는 <a href="/oauth2/authorization/naver">로그인</a>이 필요합니다.</h3>
-        </span>
+        <div class="ui comments">
+            <h3 class="ui dividing header">리뷰</h3>
+            <span th:if="${userName}">
+                <form class="ui reply form" style="margin-bottom:15px;">
+                    <input type="hidden" id="tourListId"/>
+                    <input type="hidden" id="userName" th:value="${userName}"/> <!--이름-->
+                    <input type="hidden" id="userEmail" th:value="${userEmail}"/> <!--이메일-->
+                    <input type="hidden" id="userPicture" th:value="${userPicture}"/> <!--사진-->
+                    <div th:inline="text">
+                        <img th:src="${userPicture}" style="border-radius:100%; width:14px; height:14px;"/>
+                        [[${userName}]]
+                    </div>
+                    <div class="ui yellow rating" id="rating1" style="margin:8px 0px !important;"></div> <!--평점-->
+                    <div class="field">
+                        <textarea id="content" maxlength="100" placeholder="건전한 리뷰를 작성해주세요"></textarea>  <!--내용-->
+                    </div>
+                    <div id="btn-save" class="ui blue labeled submit icon button">
+                        <i class="icon edit"></i> 리뷰 남기기
+                    </div>
+                </form>
+            </span>
+            <span th:unless="${userName}">
+                <h3 style="margin-bottom:15px;">리뷰를 위해서는 <a href="/oauth2/authorization/naver">로그인</a>이 필요합니다.</h3>
+            </span>
 
-        <div class="comment">
-            <a class="avatar">
-                <img src="" />
-            </a>
-            <div class="content">
-                <a class="author">Matt</a>
-                <div class="metadata">
-                    <span class="date">Today at 5:42PM</span>
-                </div>
-                <div class="text">
-                    How artistic!
-                </div>
-                <div class="actions">
-                    <a class="reply">Reply</a>
-                </div>
+            <div class="ui divider"></div>
+
+            <div class="ui segment" style="border:none !important; -webkit-box-shadow:none !important; box-shadow:none !important; padding:unset !important;">
+                <div id="loading" class="ui disabled loader"></div>
+                <div id="comments"></div>
             </div>
+
         </div>
 
     </div>
@@ -460,6 +457,7 @@ $(document).ready(function(){
             url: '/getTourList',
             data:{"id":id},
             success: function(data) {
+                $('#tourListId').html(data.id);
                 $('#title').html(data.title);
                 $('#cotAddrNew').html(data.cotAddrNew);
                 $('#cotTel').html(data.cotTel);
@@ -469,6 +467,28 @@ $(document).ready(function(){
                 $('#cotUseTimeDesc').html(data.cotUseTimeDesc);
                 $('#cotTroublemanConvenfac').html(data.cotTroublemanConvenfac);
                 $('.ui.modal').modal('show');
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/getCommentList',
+                    data:{"id":id},
+                    success: function(data) {
+                        reloadPage(data);
+                    },
+                    beforeSend:function() {
+                        $("#comments").html("");
+                        $("#loading").removeClass('disabled');
+                        $("#loading").addClass('active');
+                    },
+                    complete:function() {
+                        $("#loading").removeClass('active');
+                        $("#loading").addClass('disabled');
+                    },
+                    error:function(error) {
+                        alert("데이터 가져오기 실패..");
+                    }
+                });
+
             },
             beforeSend:function() {
                 $('body').toast({
@@ -484,14 +504,97 @@ $(document).ready(function(){
         });
 
     });
+
+    $('#btn-save').on('click', function() {
+        var userName = $('#userName').val();
+        var userEmail = $('#userEmail').val();
+        var userPicture = $('#userPicture').val();
+        var content = $('#content').val();
+        var rating = $('#rating1').rating('get rating');
+        var tourListId = $('#tourListId').text();
+
+        var data = {
+            name : userName,
+            email : userEmail,
+            picture : userPicture,
+            content : content,
+            rating : rating,
+            tourListId : tourListId
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/saveComment',
+            dataType: 'json',
+            contentType:'application/json; charset=utf-8',
+            data: JSON.stringify(data),
+            success: function() {
+                alert('글 작성완료');
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/getCommentList',
+                    data:{"id":tourListId},
+                    success: function(data) {
+                        reloadPage(data);
+                    },
+                    beforeSend:function() {
+                        $("#comments").html("");
+                        $("#loading").removeClass('disabled');
+                        $("#loading").addClass('active');
+                    },
+                    complete:function() {
+                        $("#loading").removeClass('active');
+                        $("#loading").addClass('disabled');
+                    },
+                    error:function(error) {
+                        alert("데이터 가져오기 실패..");
+                    }
+                });
+
+            },
+            beforeSend:function() {
+
+            },
+            complete:function() {
+                $('#content').val('');
+            },
+            error:function(error) {
+                alert('에러 발생');
+            }
+        });
+
+    });
+
 });
 
-$('#rating1')
-  .rating({
+$('#rating1').rating({
     initialRating: 3,
     maxRating: 5
-  });
+});
+
+function reloadPage(data) {
+
+    $('#comments').html('');
+    $.each(data, function(index, item) {
+        var commentsTag = "";
+        commentsTag += "<div class='comment'>";
+        commentsTag += "<a class='avatar'><img src='"+item.picture+"' style='border-radius:100% !important;' /></a>";
+        commentsTag += "<div class='content'>";
+        commentsTag += "<a class='author'>"+item.name+"</a>";
+        commentsTag += "<div class='metadata'><span class='date'>"+item.modifiedDate+"</span></div><br>";
+        commentsTag += "<div class='ui yellow rating rating2' id='rating2' data-rating='"+item.rating+"' data-max-rating='5'></div><br>";
+        commentsTag += "<div class='text'>"+item.content+"</div>";
+        commentsTag += "<div class='actions'><a class='reply'>수정</a></div>";
+        commentsTag += "</div></div>";
+
+        $('#comments').append(commentsTag);
+        $('.rating2').rating('disable');
+    });
+}
 
 </script>
+
 </body>
 </html>
+

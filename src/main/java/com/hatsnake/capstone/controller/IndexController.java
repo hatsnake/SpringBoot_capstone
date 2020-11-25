@@ -2,15 +2,17 @@ package com.hatsnake.capstone.controller;
 
 import com.hatsnake.capstone.config.auth.LoginUser;
 import com.hatsnake.capstone.config.dto.SessionUser;
+import com.hatsnake.capstone.domain.comment.Comment;
+import com.hatsnake.capstone.dto.CommentListResponseDto;
+import com.hatsnake.capstone.dto.CommentResponseDto;
+import com.hatsnake.capstone.dto.CommentSaveRequestDto;
 import com.hatsnake.capstone.dto.TourListResponseDto;
+import com.hatsnake.capstone.service.comment.CommentService;
 import com.hatsnake.capstone.service.tourList.TourListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -25,25 +27,30 @@ public class IndexController {
     @Autowired
     private HttpSession httpSession;
 
-    @GetMapping("")
-    public String index(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum, @LoginUser SessionUser user) {
+    @Autowired
+    private CommentService commentService;
 
-        List<TourListResponseDto> tourListPagination = tourListService.findAllPagination(pageNum);
-        Integer[] pageList = tourListService.getPageList(pageNum);
+    @GetMapping("")
+    public String index(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+                        @LoginUser SessionUser user, @RequestParam(value = "keyword", defaultValue = "") String keyword) {
+        List<TourListResponseDto> tourListPagination = tourListService.findAllPagination(pageNum, keyword);
+        Integer[] pageList = tourListService.getPageList(pageNum, keyword);
         List<TourListResponseDto> tourListAll = tourListService.findAll();
 
-        Integer lastPageNum = (int)(Math.ceil(pageList.length/10));
+        Integer lastPageNum = (int)(Math.ceil((double)pageList.length/10));
 
         if(user != null) {
             model.addAttribute("userPicture", user.getPicture());
             model.addAttribute("userName", user.getName());
+            model.addAttribute("userEmail", user.getEmail());
         }
 
         model.addAttribute("tourListPagination", tourListPagination);
         model.addAttribute("pageList", pageList);
         model.addAttribute("currentPageNum", pageNum);
-        model.addAttribute("tourListAll", tourListAll);
         model.addAttribute("lastPageNum", lastPageNum);
+        model.addAttribute("tourListAll", tourListAll);
+        model.addAttribute("keyword", keyword);
 
         return "index";
     }
@@ -86,4 +93,17 @@ public class IndexController {
         return map;
     }
 
+    @PostMapping("/saveComment")
+    @ResponseBody
+    public Long saveComment(@RequestBody CommentSaveRequestDto requestDto) {
+        return commentService.save(requestDto);
+    }
+
+    @GetMapping("/getCommentList")
+    @ResponseBody
+    public List<CommentListResponseDto> getCommentList(@RequestParam("id") Long id) {
+        List<CommentListResponseDto> commentList = commentService.findAll(id);
+
+        return commentList;
+    }
 }

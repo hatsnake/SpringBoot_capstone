@@ -25,11 +25,11 @@ public class TourListService {
     private static int BLOCK_PAGE_NUM_COUNT; //블럭에 존재하는 페이지수
     private static final int PAGE_POST_COUNT = 10; //한페이지에 존재하는 게시글수
 
+    // 페이지네이션과 검색기능이 들어간 리스트
     @Transactional
-    public List<TourListResponseDto> findAllPagination(Integer pageNum) {
+    public List<TourListResponseDto> findAllPagination(Integer pageNum, String keyword) {
         Page<TourList> page =
-                tourListRepository.findAll(PageRequest.of(pageNum-1, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "id")));
-
+                tourListRepository.findAllByTitleContaining(PageRequest.of(pageNum-1, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "id")), keyword);
         List<TourList> tourLists = page.getContent();
         List<TourListResponseDto> tourListResponseDtoList = new ArrayList<>();
 
@@ -40,6 +40,7 @@ public class TourListService {
         return tourListResponseDtoList;
     }
 
+    // 지도에 모든 위치표시
     @Transactional
     public List<TourListResponseDto> findAll() {
         return tourListRepository.findAll().stream()
@@ -65,11 +66,12 @@ public class TourListService {
                 .build();
     }
 
-    public Integer[] getPageList(Integer curPageNum) {
+    public Integer[] getPageList(Integer curPageNum, String keyword) {
 
+        int getBoardCount = tourListRepository.findAllByTitleContaining(keyword).size();
         //총게시글수
-        Double postsTotalCount = Double.valueOf(this.getBoardCount());
-        BLOCK_PAGE_NUM_COUNT = this.getBoardCount().intValue();
+        Double postsTotalCount = Double.valueOf(getBoardCount);
+        BLOCK_PAGE_NUM_COUNT = getBoardCount;
         Integer[] pageList = new Integer[BLOCK_PAGE_NUM_COUNT];
         //총게시글수를 기준으로 계산한 마지막 페이지 번호 계산
         Integer totalLastPageNum = (int)(Math.ceil((postsTotalCount/PAGE_POST_COUNT)));
@@ -80,7 +82,7 @@ public class TourListService {
         curPageNum = (curPageNum<=3) ? 1 : curPageNum-2;
         //페이지 번호 할당
         for(int val=curPageNum, i=0; val<=curPageNum+4; val++,i++) {
-            if(totalLastPageNum >= val)
+            if(blockLastPageNum >= val)
                 pageList[i] = val;
         }
 
@@ -109,12 +111,6 @@ public class TourListService {
             .build();
 
         return tourListDto;
-    }
-
-
-    @Transactional
-    public Long getBoardCount() {
-        return tourListRepository.count();
     }
 
 }
