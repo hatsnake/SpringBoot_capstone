@@ -1,7 +1,10 @@
 package com.hatsnake.capstone.service.tourList;
 
+import com.hatsnake.capstone.domain.comment.Comment;
+import com.hatsnake.capstone.domain.comment.CommentRepository;
 import com.hatsnake.capstone.domain.tourList.TourList;
 import com.hatsnake.capstone.domain.tourList.TourListRepository;
+import com.hatsnake.capstone.dto.CommentListResponseDto;
 import com.hatsnake.capstone.dto.TourListResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,12 +24,15 @@ public class TourListService {
     @Autowired
     private TourListRepository tourListRepository;
 
+    @Autowired
+    private CommentRepository commentRepository;
+
     //오류 고쳐야함
     private static int BLOCK_PAGE_NUM_COUNT; //블럭에 존재하는 페이지수
     private static final int PAGE_POST_COUNT = 10; //한페이지에 존재하는 게시글수
 
     // 페이지네이션과 검색기능이 들어간 리스트
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TourListResponseDto> findAllPagination(Integer pageNum, String keyword) {
         Page<TourList> page =
                 tourListRepository.findAllByTitleContaining(PageRequest.of(pageNum-1, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "id")), keyword);
@@ -34,6 +40,17 @@ public class TourListService {
         List<TourListResponseDto> tourListResponseDtoList = new ArrayList<>();
 
         for(TourList tourList : tourLists) {
+            //tourListResponseDtoList.add(this.convertEntityToDto(tourList));
+            List<Comment> commentList = commentRepository.findAllById(tourList.getId());
+
+            float rating = 0;
+            int i = 0;
+            for(Comment comment : commentList) {
+                rating = rating + comment.getRating();
+                i = i + 1;
+            }
+            float AvgRating = (float) (Math.round((rating/i)*100)/100.0);
+            tourList.setAvgRating(AvgRating);
             tourListResponseDtoList.add(this.convertEntityToDto(tourList));
         }
 
@@ -41,7 +58,7 @@ public class TourListService {
     }
 
     // 지도에 모든 위치표시
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TourListResponseDto> findAll() {
         return tourListRepository.findAll().stream()
                 .map(TourListResponseDto::new)
@@ -63,9 +80,11 @@ public class TourListService {
                 .cotCloseDay(tourList.getCotCloseDay())
                 .cotUseTimeDesc(tourList.getCotUseTimeDesc())
                 .cotTroublemanConvenfac(tourList.getCotTroublemanConvenfac())
+                .avgRating(tourList.getAvgRating())
                 .build();
     }
 
+    @Transactional
     public Integer[] getPageList(Integer curPageNum, String keyword) {
 
         int getBoardCount = tourListRepository.findAllByTitleContaining(keyword).size();
@@ -108,6 +127,7 @@ public class TourListService {
             .cotCloseDay(tourList.getCotCloseDay())
             .cotUseTimeDesc(tourList.getCotUseTimeDesc())
             .cotTroublemanConvenfac(tourList.getCotTroublemanConvenfac())
+            .avgRating(tourList.getAvgRating())
             .build();
 
         return tourListDto;

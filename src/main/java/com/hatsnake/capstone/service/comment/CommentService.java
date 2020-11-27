@@ -1,5 +1,6 @@
 package com.hatsnake.capstone.service.comment;
 
+import com.hatsnake.capstone.domain.comment.Comment;
 import com.hatsnake.capstone.domain.comment.CommentRepository;
 import com.hatsnake.capstone.dto.CommentListResponseDto;
 import com.hatsnake.capstone.dto.CommentSaveRequestDto;
@@ -26,6 +27,15 @@ public class CommentService {
         return commentRepository.findAll(id).stream()
                 .map(CommentListResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void delete(Long deleteId) {
+        Comment comment = commentRepository.findById(deleteId)
+                .orElseThrow(() -> new
+                        IllegalArgumentException("해당 게시글이 없습니다. deleteId="+deleteId));
+
+        commentRepository.delete(comment);
     }
 
 }

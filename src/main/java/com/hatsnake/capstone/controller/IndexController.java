@@ -33,6 +33,7 @@ public class IndexController {
     @GetMapping("")
     public String index(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
                         @LoginUser SessionUser user, @RequestParam(value = "keyword", defaultValue = "") String keyword) {
+
         List<TourListResponseDto> tourListPagination = tourListService.findAllPagination(pageNum, keyword);
         Integer[] pageList = tourListService.getPageList(pageNum, keyword);
         List<TourListResponseDto> tourListAll = tourListService.findAll();
@@ -105,5 +106,11 @@ public class IndexController {
         List<CommentListResponseDto> commentList = commentService.findAll(id);
 
         return commentList;
+    }
+
+    @GetMapping("/deleteComment")
+    @ResponseBody
+    public void deleteComment(@RequestParam("deleteId") Long deleteId) {
+        commentService.delete(deleteId);
     }
 }

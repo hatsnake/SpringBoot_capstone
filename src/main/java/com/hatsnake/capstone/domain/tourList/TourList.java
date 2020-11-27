@@ -4,10 +4,12 @@ import com.hatsnake.capstone.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class TourList extends BaseTimeEntity {
@@ -33,13 +35,16 @@ public class TourList extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String cotTroublemanConvenfac;
 
+    @Column(columnDefinition = "double default 0")
+    private float avgRating;
+
     @Builder
     public TourList(String cotArtId, String cotMapPointX,
                     String cotMapPointY, String title,
                     String cotAddrNew, String cotTel,
                     String cotHomepage, String cot24hService,
                     String wifiUse, String cotCloseDay,
-                    String cotUseTimeDesc, String cotTroublemanConvenfac) {
+                    String cotUseTimeDesc, String cotTroublemanConvenfac, float avgRating) {
         this.cotArtId = cotArtId;
         this.cotMapPointX = cotMapPointX;
         this.cotMapPointY = cotMapPointY;
@@ -52,6 +57,7 @@ public class TourList extends BaseTimeEntity {
         this.cotCloseDay = cotCloseDay;
         this.cotUseTimeDesc = cotUseTimeDesc;
         this.cotTroublemanConvenfac = cotTroublemanConvenfac;
+        this.avgRating = avgRating;
     }
 
 }

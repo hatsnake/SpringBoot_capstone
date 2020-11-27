@@ -24,6 +24,7 @@ public class TourListResponseDto {
     private String cotCloseDay;
     private String cotUseTimeDesc;
     private String cotTroublemanConvenfac;
+    private float avgRating;
 
     public TourListResponseDto(TourList entity) {
         this.id = entity.getId();
@@ -33,6 +34,7 @@ public class TourListResponseDto {
         this.title = entity.getTitle();
         this.cotAddrNew = entity.getCotAddrNew();
         this.cotTel = entity.getCotTel();
+        this.avgRating = entity.getAvgRating();
 
         // http나 https가 없는 주소에 http를 붙혀줌
         if(entity.getCotHomepage() == null) {
@@ -48,6 +50,7 @@ public class TourListResponseDto {
         this.cotCloseDay = entity.getCotCloseDay();
         this.cotUseTimeDesc = entity.getCotUseTimeDesc();
         this.cotTroublemanConvenfac = entity.getCotTroublemanConvenfac();
+        this.avgRating = entity.getAvgRating();
     }
 
     @Builder
@@ -56,7 +59,7 @@ public class TourListResponseDto {
                     String cotAddrNew, String cotTel,
                     String cotHomepage, String cot24hService,
                     String wifiUse, String cotCloseDay,
-                    String cotUseTimeDesc, String cotTroublemanConvenfac) {
+                    String cotUseTimeDesc, String cotTroublemanConvenfac, float avgRating) {
         this.id = id;
         this.cotArtId = cotArtId;
         this.cotMapPointX = cotMapPointX;
@@ -79,6 +82,7 @@ public class TourListResponseDto {
         this.cotCloseDay = cotCloseDay;
         this.cotUseTimeDesc = cotUseTimeDesc;
         this.cotTroublemanConvenfac = cotTroublemanConvenfac;
+        this.avgRating = avgRating;
     }
 
 }

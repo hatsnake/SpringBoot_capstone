@@ -23,6 +23,7 @@ public class TourListSaveRequestDto {
     private String cotCloseDay;
     private String cotUseTimeDesc;
     private String cotTroublemanConvenfac;
+    private float avgRating;
 
     @Builder
     public TourListSaveRequestDto(String cotArtId, String cotMapPointX,
@@ -30,7 +31,7 @@ public class TourListSaveRequestDto {
                                   String cotAddrNew, String cotTel,
                                   String cotHomepage, String cot24hService,
                                   String wifiUse, String cotCloseDay,
-                                  String cotUseTimeDesc, String cotTroublemanConvenfac){
+                                  String cotUseTimeDesc, String cotTroublemanConvenfac, float avgRating){
         this.cotArtId = cotArtId;
         this.cotMapPointX = cotMapPointX;
         this.cotMapPointY = cotMapPointY;
@@ -43,6 +44,7 @@ public class TourListSaveRequestDto {
         this.cotCloseDay = cotCloseDay;
         this.cotUseTimeDesc = cotUseTimeDesc;
         this.cotTroublemanConvenfac = cotTroublemanConvenfac;
+        this.avgRating = avgRating;
     }
 
     public TourList toEntity() {
@@ -59,6 +61,7 @@ public class TourListSaveRequestDto {
                 .cotCloseDay(cotCloseDay)
                 .cotUseTimeDesc(cotUseTimeDesc)
                 .cotTroublemanConvenfac(cotTroublemanConvenfac)
+                .avgRating(avgRating)
                 .build();
     }
 

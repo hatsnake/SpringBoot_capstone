@@ -10,4 +10,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c FROM Comment c WHERE c.tourListId = ?1 ORDER BY c.id DESC")
     List<Comment> findAll(Long id);
 
+    @Query("SELECT c FROM Comment c WHERE c.tourListId = ?1")
+    List<Comment> findAllById(Long id);
 }
