@@ -138,7 +138,7 @@
 
     <div class="ui secondary pointing menu" style="margin-top:0.5% !important;">
         <a class="item active">
-            지도
+            서울구경
         </a>
 
         <div class="right menu">
@@ -165,7 +165,7 @@
             </a>
         </div>
     </div>
-    <div class="ui tertiary inverted red segment">
+    <div class="ui tertiary inverted green segment">
         <div class="map_box">
             <div id="map">
             </div>
@@ -181,11 +181,16 @@
         <div class="ui grid">
             <div id="input_column" class="sixteen wide column">
                 <div class="ui fluid large action input">
-                    <input type="text" name="keyword" placeholder="위치 검색" th:value="${keyword}">
-                    <select class="ui large compact selection dropdown">
-                        <option value="all" selected>모두</option>
-                        <option value="articles">Articles</option>
-                        <option value="products">Products</option>
+                    <input type="text" name="keyword" placeholder="검색" th:value="${keyword}">
+                    <select name="condition" class="ui large compact selection dropdown">
+                        <span th:if="${condition=='all'}">
+                            <option value="all" selected>이름</option>
+                            <option value="area">지역</option>
+                        </span>
+                        <span th:if="${condition=='area'}">
+                            <option value="all">이름</option>
+                            <option value="area" selected>지역</option>
+                        </span>
                     </select>
                     <button class="ui large button">검색</button>
                 </div>
@@ -198,22 +203,25 @@
         <div class="ui section divider"></div>
 
         <!-- 페이지네이션 -->
-        <div class="ui borderless menu">
-            <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}+'&keyword='+${keyword}}" class="item">
-                <i class="left arrow icon"></i> 이전
-            </a>
-            <span th:each="pageNum : ${pageList}" th:inline="text">
-                <span th:if="${currentPageNum == pageNum}">
-                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item" style="color:red;">[[${pageNum}]]</a>
-                </span>
-                <span th:unless="${currentPageNum == pageNum}">
-                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item">[[${pageNum}]]</a>
-                </span>
-            </span>
+        <div class="ui borderless menu" th:unless="${lastPageNum == 0}" style="margin:1rem 0 2rem 0 !important;">
+                <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}+'&keyword='+${keyword}}" class="item float left">
+                    <i class="left arrow icon"></i> 이전
+                </a>
+                <span th:unless="${currentPageNum != 1}" class="item float left"></span>
 
-            <a th:if="${currentPageNum != lastPageNum}" th:href="@{'/?page='+${currentPageNum+1}+'&keyword='+${keyword}}" class="item">
-                다음 <i class="icon right arrow"></i>
-            </a>
+                <span th:each="pageNum : ${pageList}" th:inline="text">
+                    <span th:if="${currentPageNum == pageNum}">
+                        <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item" style="color:red;">[[${pageNum}]]</a>
+                    </span>
+                    <span th:unless="${currentPageNum == pageNum}">
+                        <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item">[[${pageNum}]]</a>
+                    </span>
+                </span>
+
+                <a th:if="${currentPageNum != lastPageNum}" th:href="@{'/?page='+${currentPageNum+1}+'&keyword='+${keyword}}" class="item float right">
+                    다음 <i class="icon right arrow"></i>
+                </a>
+                <span th:unless="${currentPageNum != lastPageNum}" class="item float right"></span>
         </div>
 
         <!-- 관광정보 -->
@@ -229,7 +237,7 @@
                         </div>
                         <div th:if="${tourList.cotAddrNew}" class="noto" th:inline="text">▶ 위치주소 : [[${tourList.cotAddrNew}]]</div>
                         <div th:if="${tourList.cotTel}" class="noto" th:inline="text">▶ 전화번호 : [[${tourList.cotTel}]]</div>
-                        <div th:if="${tourList.cotHomepage}" class="noto" th:inline="text">▶ 웹사이트 : <a th:href="${tourList.cotHomepage}" target="_blank">[[${tourList.cotHomepage}]]</a></div>
+                        <div th:if="${tourList.cotHomepage}" class="noto" th:inline="text">▶ 웹사이트 : <a th:href="${tourList.cotHomepage}" target="_blank">링크</a></div>
                         <div th:if="${tourList.wifiUse == 'N'}" class="noto" th:inline="text">▶ 와이파이 : x</div>
                         <div th:unless="${tourList.wifiUse == 'N'}" class="noto" th:inline="text">▶ 와이파이 : o</div>
                         <div th:if="${tourList.cotUseTimeDesc}" class="noto" th:inline="text">▶ 운영시간 :<br/> <div style="margin: 5px 20px;">[(${tourList.cotUseTimeDesc})]</div></div>
@@ -246,22 +254,25 @@
     </div>
 
     <!-- 페이지네이션 -->
-    <div class="ui borderless menu">
-        <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}+'&keyword='+${keyword}}" class="item">
+    <div class="ui borderless menu" th:unless="${lastPageNum == 0}" style="margin:1rem 0 2rem 0 !important;">
+        <a th:if="${currentPageNum != 1}" th:href="@{'/?page='+${currentPageNum-1}+'&keyword='+${keyword}}" class="item float left">
             <i class="left arrow icon"></i> 이전
         </a>
-        <span th:each="pageNum : ${pageList}" th:inline="text">
-                <span th:if="${currentPageNum == pageNum}">
-                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item" style="color:red;">[[${pageNum}]]</a>
-                </span>
-                <span th:unless="${currentPageNum == pageNum}">
-                    <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item">[[${pageNum}]]</a>
-                </span>
-            </span>
+        <span th:unless="${currentPageNum != 1}" class="item float left"></span>
 
-        <a th:if="${currentPageNum != lastPageNum}" th:href="@{'/?page='+${currentPageNum+1}+'&keyword='+${keyword}}" class="item">
+        <span th:each="pageNum : ${pageList}" th:inline="text">
+                    <span th:if="${currentPageNum == pageNum}">
+                        <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item" style="color:red;">[[${pageNum}]]</a>
+                    </span>
+                    <span th:unless="${currentPageNum == pageNum}">
+                        <a th:if="${not #strings.isEmpty(pageNum)}" th:href="@{'/?page='+${pageNum}+'&keyword='+${keyword}}" class="item">[[${pageNum}]]</a>
+                    </span>
+                </span>
+
+        <a th:if="${currentPageNum != lastPageNum}" th:href="@{'/?page='+${currentPageNum+1}+'&keyword='+${keyword}}" class="item float right">
             다음 <i class="icon right arrow"></i>
         </a>
+        <span th:unless="${currentPageNum != lastPageNum}" class="item float right"></span>
     </div>
     <br><br>
 </div>
@@ -269,6 +280,7 @@
 <div class="ui blurring segment longer small modal" >
     <div class="header" id="title"></div>
     <div class="scrolling content">
+        <img id="picture" src="" style="width:100%; max-height:600px; margin-bottom:10px;">
         <div id="cotAddrNew"></div>
         <div id="cotTel"></div>
         <div id="cotHomepage"></div>
@@ -456,6 +468,7 @@ $(document).ready(function(){
                 $('#cotCloseDay').html(data.cotCloseDay);
                 $('#cotUseTimeDesc').html(data.cotUseTimeDesc);
                 $('#cotTroublemanConvenfac').html(data.cotTroublemanConvenfac);
+                $('#picture').attr('src', data.picture);
                 $('.ui.modal').modal('show');
 
                 $.ajax({
@@ -481,9 +494,12 @@ $(document).ready(function(){
 
             },
             beforeSend:function() {
-                $('body').toast({
-                    message: '상세보기 여는중입니다. &nbsp; <div class="ui active small inline slow blue double loader"></div>'
-                });
+                $('body')
+                  .toast({
+                    position: 'bottom right',
+                    message: `상세정보를 가져왔습니다.`
+                  })
+                ;
             },
             complete:function() {
 
@@ -580,11 +596,13 @@ function reloadPage(data,tourListId) {
             commentsTag += "<div class='comment'>";
             commentsTag += "<a class='avatar'><img src='"+item.picture+"' /></a>";
             commentsTag += "<div class='content'>";
-            commentsTag += "<a class='author'>"+item.name+"</a>";
-            commentsTag += "<div class='metadata'><span class='date'>"+ymd+" "+hms+"</span></div><br>";
+            commentsTag += "<a class='author'>"+item.name+" <span style='font-size:11px;'>("+item.email+")</span></a><br>";
+            commentsTag += "<div class='metadata' style='margin-left:0.1em !important; margin-bottom:2px;'><span class='date'>"+ymd+" "+hms+"</span></div><br>";
             commentsTag += "<div class='ui yellow rating rating2' id='rating2' data-rating='"+item.rating+"' data-max-rating='5'></div><br>";
             commentsTag += "<div class='text'>"+item.content+"</div>";
-            commentsTag += "<div class='actions'><a class='reply'>수정</a> <a class='reply btn-delete' onclick='deleteFunction("+item.id+","+tourListId+")'>삭제</a></div>";
+            if(/*[[${userEmail}]]*/ == item.email) {
+                commentsTag += "<div class='actions'><a class='reply'>수정</a> <a class='reply btn-delete' onclick='deleteFunction("+item.id+","+tourListId+")'>삭제</a></div>";
+            }
             commentsTag += "</div></div>";
 
             $('#comments').append(commentsTag);

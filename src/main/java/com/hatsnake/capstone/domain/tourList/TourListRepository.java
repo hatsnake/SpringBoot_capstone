@@ -13,6 +13,8 @@ public interface TourListRepository extends JpaRepository<TourList, Long> {
     List<TourList> findAllAsc();
 
     Page<TourList> findAllByTitleContaining(Pageable pageable, String keyword);
+    Page<TourList> findAllByCotAddrNewContaining(Pageable pageable, String keyword);
 
     List<TourList> findAllByTitleContaining(String keyword);
+    List<TourList> findAllByCotAddrNewContaining(String keyword);
 }

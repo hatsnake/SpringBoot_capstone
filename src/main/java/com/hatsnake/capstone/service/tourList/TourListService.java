@@ -33,9 +33,15 @@ public class TourListService {
 
     // 페이지네이션과 검색기능이 들어간 리스트
     @Transactional(readOnly = true)
-    public List<TourListResponseDto> findAllPagination(Integer pageNum, String keyword) {
-        Page<TourList> page =
-                tourListRepository.findAllByTitleContaining(PageRequest.of(pageNum-1, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "id")), keyword);
+    public List<TourListResponseDto> findAllPagination(Integer pageNum, String keyword, String condition) {
+
+        Page<TourList> page = null;
+
+        if(condition.equals("all")) {
+            page = tourListRepository.findAllByTitleContaining(PageRequest.of(pageNum - 1, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "id")), keyword);
+        } else if(condition.equals("area")) {
+            page = tourListRepository.findAllByCotAddrNewContaining(PageRequest.of(pageNum - 1, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "id")), keyword);
+        }
         List<TourList> tourLists = page.getContent();
         List<TourListResponseDto> tourListResponseDtoList = new ArrayList<>();
 
@@ -81,13 +87,20 @@ public class TourListService {
                 .cotUseTimeDesc(tourList.getCotUseTimeDesc())
                 .cotTroublemanConvenfac(tourList.getCotTroublemanConvenfac())
                 .avgRating(tourList.getAvgRating())
+                .picture(tourList.getPicture())
                 .build();
     }
 
     @Transactional
-    public Integer[] getPageList(Integer curPageNum, String keyword) {
+    public Integer[] getPageList(Integer curPageNum, String keyword, String condition) {
 
-        int getBoardCount = tourListRepository.findAllByTitleContaining(keyword).size();
+        int getBoardCount = 0;
+
+        if(condition.equals("all")) {
+            getBoardCount = tourListRepository.findAllByTitleContaining(keyword).size();
+        } else if(condition.equals("area")) {
+            getBoardCount = tourListRepository.findAllByCotAddrNewContaining(keyword).size();
+        }
         //총게시글수
         Double postsTotalCount = Double.valueOf(getBoardCount);
         BLOCK_PAGE_NUM_COUNT = getBoardCount;
@@ -128,6 +141,7 @@ public class TourListService {
             .cotUseTimeDesc(tourList.getCotUseTimeDesc())
             .cotTroublemanConvenfac(tourList.getCotTroublemanConvenfac())
             .avgRating(tourList.getAvgRating())
+            .picture(tourList.getPicture())
             .build();
 
         return tourListDto;

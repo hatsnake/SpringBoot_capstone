@@ -32,10 +32,10 @@ public class IndexController {
 
     @GetMapping("")
     public String index(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
-                        @LoginUser SessionUser user, @RequestParam(value = "keyword", defaultValue = "") String keyword) {
-
-        List<TourListResponseDto> tourListPagination = tourListService.findAllPagination(pageNum, keyword);
-        Integer[] pageList = tourListService.getPageList(pageNum, keyword);
+                        @LoginUser SessionUser user, @RequestParam(value = "keyword", defaultValue = "") String keyword,
+                        @RequestParam(value = "condition", defaultValue = "all") String condition) {
+        List<TourListResponseDto> tourListPagination = tourListService.findAllPagination(pageNum, keyword, condition);
+        Integer[] pageList = tourListService.getPageList(pageNum, keyword, condition);
         List<TourListResponseDto> tourListAll = tourListService.findAll();
 
         Integer lastPageNum = (int)(Math.ceil((double)pageList.length/10));
@@ -52,6 +52,7 @@ public class IndexController {
         model.addAttribute("lastPageNum", lastPageNum);
         model.addAttribute("tourListAll", tourListAll);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("condition", condition);
 
         return "index";
     }
@@ -89,6 +90,11 @@ public class IndexController {
         }
         if(tourList.getCotTroublemanConvenfac() != null) {
             map.put("cotTroublemanConvenfac", " <i class=\"wheelchair icon\"></i><br/> " + tourList.getCotTroublemanConvenfac());
+        }
+        if(tourList.getPicture() != null) {
+            map.put("picture", tourList.getPicture());
+        } else {
+            map.put("picture", "/images/noImage.jpg");
         }
 
         return map;
