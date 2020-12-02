@@ -453,7 +453,7 @@ $(document).ready(function(){
 
     $('.tourListTitle,.tourMarker').on('click', function() {
         var id = $(this).attr('data-id');
-        alert(id);
+        console.log(id);
 
         $.ajax({
             type: 'GET',
