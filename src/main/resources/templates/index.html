@@ -113,15 +113,15 @@
         position:relative;
     }
     .tourMarker::after {
-        content: ' \2726';
+        content: '\2713';
         width:46px;
-        height:21px;
+        height:18px;
         position:absolute;
         bottom:-80%;
-        left:32%;
-        font-size:3em;
-        color:yellow;
-        text-shadow:3px 2px 7px black;
+        left:38%;
+        font-size:2.5em;
+        color:#1acc1a;
+        text-shadow:2px 2px 4px black;
     }
     .tourMarker:hover {
         cursor:point;
@@ -241,6 +241,14 @@
                         <div th:if="${tourList.wifiUse == 'N'}" class="noto" th:inline="text">▶ 와이파이 : x</div>
                         <div th:unless="${tourList.wifiUse == 'N'}" class="noto" th:inline="text">▶ 와이파이 : o</div>
                         <div th:if="${tourList.cotUseTimeDesc}" class="noto" th:inline="text">▶ 운영시간 :<br/> <div style="margin: 5px 20px;">[(${tourList.cotUseTimeDesc})]</div></div>
+
+                        <div class="ui tiny brown vertical labeled icon buttons location" style="margin-top:5px;" th:data-x="${tourList.cotMapPointX}" th:data-y="${tourList.cotMapPointY}">
+                          <button class="ui button">
+                            <i class="shoe prints icon"></i>
+                            위치 이동
+                          </button>
+                        </div>
+
                     </div>
                     <div class="extra">
                         
@@ -366,6 +374,18 @@ function getLocation() {
   if (navigator.geolocation) { // GPS를 지원하면
     navigator.geolocation.getCurrentPosition(function(position) {
 
+        $(".location").on("click", function(e) {
+            e.preventDefault();
+            var x = $(this).attr("data-x");
+            var y = $(this).attr("data-y");
+
+            var click_location = new naver.maps.LatLngBounds(
+                                    new naver.maps.LatLng(y, x));
+
+            map.panToBounds(click_location);
+            $('html').scrollTop(0);
+        });
+
     	// 현재위치 표시
     	var mapOptions = {
    		    center: new naver.maps.LatLng(position.coords.latitude, position.coords.longitude),
@@ -453,12 +473,14 @@ $(document).ready(function(){
 
     $('.tourListTitle,.tourMarker').on('click', function() {
         var id = $(this).attr('data-id');
-        console.log(id);
 
         $.ajax({
             type: 'GET',
             url: '/getTourList',
-            data:{"id":id},
+            data:{
+                "id":id,
+                "pageNum":""
+            },
             success: function(data) {
                 $('#tourListId').html(data.id);
                 $('#title').html(data.title);
@@ -475,7 +497,10 @@ $(document).ready(function(){
                 $.ajax({
                     type: 'GET',
                     url: '/getCommentList',
-                    data:{"id":id},
+                    data:{
+                        "id":id,
+                        "pageNum":""
+                    },
                     success: function(data) {
                         reloadPage(data,id);
                     },
@@ -495,12 +520,7 @@ $(document).ready(function(){
 
             },
             beforeSend:function() {
-                $('body')
-                  .toast({
-                    position: 'bottom right',
-                    message: `상세정보를 가져왔습니다.`
-                  })
-                ;
+
             },
             complete:function() {
 
@@ -541,7 +561,10 @@ $(document).ready(function(){
                 $.ajax({
                     type: 'GET',
                     url: '/getCommentList',
-                    data:{"id":tourListId},
+                    data:{
+                        "id":tourListId,
+                        "pageNum":""
+                    },
                     success: function(data) {
                         reloadPage(data,tourListId);
                     },
@@ -594,6 +617,7 @@ function reloadPage(data,tourListId) {
             var commentsTag = "";
             var ymd = item.modifiedDate.substring(0,10);
             var hms = item.modifiedDate.substring(11,16);
+
             commentsTag += "<div class='comment'>";
             commentsTag += "<a class='avatar'><img src='"+item.picture+"' /></a>";
             commentsTag += "<div class='content'>";
@@ -647,7 +671,10 @@ function deleteFunction(deleteId,tourListId) {
             $.ajax({
                 type: 'GET',
                 url: '/getCommentList',
-                data:{"id":tourListId},
+                data:{
+                    "id":tourListId,
+                    "pageNum":""
+                },
                 success: function(data) {
                     reloadPage(data,tourListId);
                 },

@@ -10,6 +10,7 @@ import com.hatsnake.capstone.dto.TourListResponseDto;
 import com.hatsnake.capstone.service.comment.CommentService;
 import com.hatsnake.capstone.service.tourList.TourListService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -108,8 +109,9 @@ public class IndexController {
 
     @GetMapping("/getCommentList")
     @ResponseBody
-    public List<CommentListResponseDto> getCommentList(@RequestParam("id") Long id) {
-        List<CommentListResponseDto> commentList = commentService.findAll(id);
+    public List<CommentListResponseDto> getCommentList(@RequestParam("id") Long id,
+                                                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        List<CommentListResponseDto> commentList = commentService.findAll(id, pageNum);
 
         return commentList;
     }
