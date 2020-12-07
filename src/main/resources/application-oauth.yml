@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           naver:
-            client-id: "VgtuyCe4UGCHUbovuHQc"
-            client-secret: "qXhsz_TsFY"
+            client-id: "hrXkrLyxiS_w4oJdJELB"
+            client-secret: "980UdHZKvB"
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
             authorization_grant_type: authorization_code
             scope: name,email,profile_image

@@ -101,11 +101,7 @@ public class IndexController {
         return map;
     }
 
-    @PostMapping("/saveComment")
-    @ResponseBody
-    public Long saveComment(@RequestBody CommentSaveRequestDto requestDto) {
-        return commentService.save(requestDto);
-    }
+
 
     @GetMapping("/getCommentList")
     @ResponseBody
@@ -116,9 +112,16 @@ public class IndexController {
         return commentList;
     }
 
+    @PostMapping("/saveComment")
+    @ResponseBody
+    public Long saveComment(@RequestBody CommentSaveRequestDto requestDto) {
+        return commentService.save(requestDto);
+    }
+
     @GetMapping("/deleteComment")
     @ResponseBody
     public void deleteComment(@RequestParam("deleteId") Long deleteId) {
         commentService.delete(deleteId);
     }
+
 }

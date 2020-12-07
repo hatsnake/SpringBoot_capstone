@@ -392,8 +392,10 @@ function getLocation() {
    		    zoom: 14
    		};
 
+        // 지도생성
    		var map = new naver.maps.Map('map', mapOptions);
 
+        // 현재위치에 마커표시
    		var markerOptions = {
    			position: new naver.maps.LatLng(position.coords.latitude, position.coords.longitude),
    			map: map,
@@ -407,6 +409,7 @@ function getLocation() {
             }
    		};
 
+        // 마커생성
    		var marker = new naver.maps.Marker(markerOptions);
 
         //Open API 위치랑 정보
@@ -428,7 +431,6 @@ function getLocation() {
                 var marker = new naver.maps.Marker(markerOptions);
             /*[/]*/
         /*]]>*/
-
 
    		var myLocation = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
@@ -463,6 +465,7 @@ function getLocation() {
     alert('GPS를 지원하지 않습니다');
   }
 }
+
 getLocation();
 
 $('#my_location').popup();
@@ -471,64 +474,12 @@ $('.selection.dropdown').dropdown();
 
 $(document).ready(function(){
 
-    $('.tourListTitle,.tourMarker').on('click', function() {
+    var openModal = $('.tourListTitle,.tourMarker');
+
+    openModal.on('click', function() {
         var id = $(this).attr('data-id');
 
-        $.ajax({
-            type: 'GET',
-            url: '/getTourList',
-            data:{
-                "id":id,
-                "pageNum":""
-            },
-            success: function(data) {
-                $('#tourListId').html(data.id);
-                $('#title').html(data.title);
-                $('#cotAddrNew').html(data.cotAddrNew);
-                $('#cotTel').html(data.cotTel);
-                $('#cotHomepage').html(data.cotHomepage);
-                $('#wifiUse').html(data.wifiUse);
-                $('#cotCloseDay').html(data.cotCloseDay);
-                $('#cotUseTimeDesc').html(data.cotUseTimeDesc);
-                $('#cotTroublemanConvenfac').html(data.cotTroublemanConvenfac);
-                $('#picture').attr('src', data.picture);
-                $('.ui.modal').modal('show');
-
-                $.ajax({
-                    type: 'GET',
-                    url: '/getCommentList',
-                    data:{
-                        "id":id,
-                        "pageNum":""
-                    },
-                    success: function(data) {
-                        reloadPage(data,id);
-                    },
-                    beforeSend:function() {
-                        $("#comments").html("");
-                        $("#loading").removeClass('disabled');
-                        $("#loading").addClass('active');
-                    },
-                    complete:function() {
-                        $("#loading").removeClass('active');
-                        $("#loading").addClass('disabled');
-                    },
-                    error:function(error) {
-                        alert("데이터 가져오기 실패..");
-                    }
-                });
-
-            },
-            beforeSend:function() {
-
-            },
-            complete:function() {
-
-            },
-            error:function(error) {
-
-            }
-        });
+        openModalAjax(id);
 
     });
 
@@ -702,6 +653,66 @@ function deleteFunction(deleteId,tourListId) {
             alert("데이터 삭제 실패.."+JSON.stringify(error));
         }
     });
+
+}
+
+function openModalAjax(id) {
+
+        $.ajax({
+            type: 'GET',
+            url: '/getTourList',
+            data:{
+                "id":id,
+                "pageNum":""
+            },
+            success: function(data) {
+                $('#tourListId').html(data.id);
+                $('#title').html(data.title);
+                $('#cotAddrNew').html(data.cotAddrNew);
+                $('#cotTel').html(data.cotTel);
+                $('#cotHomepage').html(data.cotHomepage);
+                $('#wifiUse').html(data.wifiUse);
+                $('#cotCloseDay').html(data.cotCloseDay);
+                $('#cotUseTimeDesc').html(data.cotUseTimeDesc);
+                $('#cotTroublemanConvenfac').html(data.cotTroublemanConvenfac);
+                $('#picture').attr('src', data.picture);
+                $('.ui.modal').modal('show');
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/getCommentList',
+                    data:{
+                        "id":id,
+                        "pageNum":""
+                    },
+                    success: function(data) {
+                        reloadPage(data,id);
+                    },
+                    beforeSend:function() {
+                        $("#comments").html("");
+                        $("#loading").removeClass('disabled');
+                        $("#loading").addClass('active');
+                    },
+                    complete:function() {
+                        $("#loading").removeClass('active');
+                        $("#loading").addClass('disabled');
+                    },
+                    error:function(error) {
+                        alert("데이터 가져오기 실패..");
+                    }
+                });
+
+            },
+            beforeSend:function() {
+
+            },
+            complete:function() {
+
+            },
+            error:function(error) {
+
+            }
+        });
 
 }
 
